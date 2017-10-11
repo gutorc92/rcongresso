@@ -67,3 +67,35 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(".")
   if (is.null(num)) tibble::tibble()
   else tibble::tibble(num)
 }
+
+.is_gender <- function(gender){
+  gender <- toupper(gender)
+  return(gender %in% c("M", "F"))
+}
+
+.is_estate <- function(estate){
+  estate <- toupper(estate)
+  return(estate %in% c("AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG",
+                       "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR",
+                       "RS", "SC", "SE", "SP", "TO"))
+}
+
+parameters_url <- function(parameters, ...){
+  values <- eval(substitute(alist(...)))
+  print(values)
+  url_parameters <- sapply(names(parameters), simplify = T, function(x){
+    value <- values[[parameters[[x]]$parameter_function]]
+    if("validate" %in% parameters[[x]]){
+      stopifnot(parameters[[x]]$validate(value))
+    }
+    if(!is.null(value)){
+      url_parameters <- paste(x, value, sep = "=")
+      return(url_parameters)
+    }
+    return(NA)
+  })
+  url_parameters <- url_parameters[!is.na(url_parameters)]
+  url_parameters <- paste(url_parameters, collapse = "&")
+  return(url_parameters)
+
+}

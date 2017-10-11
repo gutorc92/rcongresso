@@ -47,3 +47,35 @@ fetch_despesas_deputado <- function(dep_id) {
     dplyr::select(-path, -id) %>%
     return()
 }
+
+
+#' Retrieves deta about congressmen
+#'
+#' @param dep_id congressman's ID.
+#' @param term legislature term.
+#' @param estate congressmen's state.
+#' @param party congressmen's party
+#' @param gender congressmen's gender, it can be M(Male) or F(Female).
+#' @param page number of pages.
+#' @param items number of items by page.
+#' @param orderby field to order the returnted list.
+#'
+#' @return Dataframe containing details about the deputies.
+#'
+#' @examples
+#' all_deputies <- fetch_deputados()
+#'
+#' @export
+fetch_deputados <- function(dep_id = NULL, term = NULL,  estate = NULL, party = NULL,
+                            gender = NULL, page = NULL, items = NULL, orderby = NULL){
+  parameters_list <- list("siglaSexo" = list("parameter_function" = "gender", "validate" = .is_gender),
+                     "id" = list("parameter_function" = "dep_id"),
+                     "siglaUf" = list("parameter_function" = "estate", "validate" = .is_estate),
+                     "siglaPartido" = list("parameter_function" = "party"),
+                     "ordenarPor" = list("parameter_function" = "orderby"))
+
+  parameters <- parameters_url(parameters_list, dep_id, term, estate, party, gender, page, items, orderby)
+  url <- paste(.DEPUTADOS_PATH, parameters, sep = "?")
+  return(url)
+  #return(.congresso_api(url_parameters)$dados)
+}
